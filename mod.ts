@@ -1,6 +1,5 @@
-import * as log from 'https://deno.land/std/log/mod.ts';
-import * as _ from 'https://deno.land/x/lodash@4.17.15-es/lodash.js';
-import { Application, send } from 'https://deno.land/x/oak@v6.5.0/mod.ts';
+import { log, flatMap,  Application, send} from './dep.ts';
+import api from './api.ts';
 
 interface Launch {
   flightNumber: number;
@@ -25,7 +24,7 @@ export async function downloadLaunchData() {
    
    for(const launch of launchesData) {
       const payloads = launch['rocket']['second_stage']['payloads'];
-      const customers = _.flatMap(payloads, (payload: any) => {
+      const customers = flatMap(payloads, (payload: any) => {
           return payload['customers'];
       });
 
@@ -54,9 +53,33 @@ if (import.meta.main) {
 const app = new Application();
 const PORT = 8002;
 
-// app.use(async (ctx, next) => {
+// setup logger
+await log.setup({
+    handlers: {
+        console: new log.handlers.ConsoleHandler('INFO'),
+    },
+    loggers: {
+        default: {
+            level: 'INFO', // logs anything info and above
+            handlers: ["console"]
+        }
+    }
+});
 
-// });
+app.addEventListener('error', (event) => {
+    log.error(event.error);
+});
+
+app.use(async (ctx, next) => {
+    try {
+        await next();
+    } catch(err) {
+        ctx.response.body = 'Internal Server Error';
+
+        // this will be caught by oak application by adding event listener, like above
+        throw err;
+    }
+});
 
 app.use(async (ctx, next) => {
    // continue executing other middleware;
@@ -79,6 +102,13 @@ app.use(async (ctx, next) => {
     ctx.response.headers.set('X-Response-Time', `${delta}ms`);
  });
 
+// register routes 
+app.use(api.routes());
+
+// handel error for methods not implemented
+app.use(api.allowedMethods());
+
+
 // to add middleware
 // ctx contains current state and has req,res, application, state
 app.use(async (ctx) => {
@@ -87,7 +117,8 @@ app.use(async (ctx) => {
         '/index.html',
         '/javascripts/script.js',
         '/stylesheets/style.css',
-        '/images/favicon.png'
+        '/images/favicon.png',
+        '/videos/space.mp4'
     ];
     if (fileWhiteList.includes(filePath)) {
         await send(ctx, filePath, {
@@ -96,11 +127,9 @@ app.use(async (ctx) => {
     } 
 });
 
-// app.use((ctx) => {
-//    ctx.response.body = 'Mission Space';
-// });
-
 if(import.meta.main) {
+    log.info(`Starting server at port ${PORT}`);
+    
     await app.listen({
         port: PORT
     });

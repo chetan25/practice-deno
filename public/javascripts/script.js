@@ -15,21 +15,41 @@ function initValues() {
 }
 
 function loadLaunches() {
-  // TODO: Once API is ready.
-  // Load launches and sort by flight number.
+  fetch('/launches')
+  .then(response => {
+    return response.json()
+  })
+  .then(launchesList => {
+     launches = launchesList.sort((a, b) => {
+       return a.flightNumber < b.flightNumber;
+     })
+  });
 }
 
 function loadPlanets() {
   // TODO: Once API is ready.
-  // const planetSelector = document.getElementById("planets-selector");
-  // planets.forEach((planet) => {
-  //   planetSelector.innerHTML += `<option value="${planet.kepler_name}">${planet.kepler_name}</option>`;
-  // });
+  return fetch('/planets')
+  .then(response => {
+     return response.json();
+  })
+  .then(planets => {
+    const planetSelector = document.getElementById("planets-selector");
+    planets.forEach((planet) => {
+      planetSelector.innerHTML += `<option value="${planet.kepler_name}">${planet.kepler_name}</option>`;
+    });
+  });
 }
 
-function abortLaunch() {
-  // TODO: Once API is ready.
-  // Delete launch and reload launches.
+function abortLaunch(id) {
+    return fetch(`launches/${id}`, {
+      method: 'Delete',
+    })
+    .then(() => {
+      loadLaunches();
+    })
+    .then(() => {
+      listUpcoming();
+    })
 }
 
 function submitLaunch() {
@@ -39,8 +59,25 @@ function submitLaunch() {
   const rocket = document.getElementById("rocket-name").value;
   const flightNumber = launches[launches.length - 1].flightNumber + 1;
 
-  // TODO: Once API is ready.
-  // Submit above data to launch system and reload launches.
+  return fetch('/launches', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+    body: JSON.stringify({
+      launchDate: math.floor(launchDate / 1000),
+      target,
+      mission,
+      flightNumber,
+      rocket
+    });
+  })
+  .then(() => {
+    document.getElementById("launch-success").hidden = false;
+  })
+  .then(success => {
+    loadLaunches();
+  });
 }
 
 function listUpcoming() {
