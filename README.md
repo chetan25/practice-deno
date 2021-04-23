@@ -1,3 +1,10 @@
+---
+title: Sample APi with Deno
+excerpt: This is simple api built with Deno, in an effort to learn and explore Deno.
+Tools: ['Deno']
+---
+
+
 # Deno Sample API
 This is a practice code to, try out deno to build a backend api and consume it in a Front-end app.
 
