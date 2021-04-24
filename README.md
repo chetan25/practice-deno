@@ -1,5 +1,5 @@
 ---
-title: Sample APi with Deno
+title: Sample API build with Deno as a backend server.
 excerpt: This is simple api built with Deno, in an effort to learn and explore Deno.It uses free api from 'spacexdata' and some sample csv data.
 Tools: ['Deno', 'Docker']
 ---
