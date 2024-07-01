@@ -1,7 +1,7 @@
 ---
-title: Sample API build with Deno as a backend server.
-excerpt: This is simple api built with Deno, in an effort to learn and explore Deno.It uses free api from 'spacexdata' and some sample csv data.
-Tools: ['Deno', 'Docker']
+Title: Sample API build with Deno as a backend server.
+Excerpt: This is simple api built with Deno, in an effort to learn and explore Deno.It uses free api from 'spacexdata' and some sample csv data.
+Tech: "Deno, Docker"
 ---
 
 
@@ -9,23 +9,23 @@ Tools: ['Deno', 'Docker']
 This is a practice code to, try out deno to build a backend api and consume it in a Front-end app.
 
 
-### To run and generate lock file
+## To run and generate lock file
 
 > deno run --allow-net --alow-read --lock-write --lock=lock.json mod.ts
 
-### To build and run docker image from file
+## To build and run docker image from file
 > docker build Path -t TagName
 
 > eg docker build . -t TagName/space-api  ---> we are passing path as current directory and docker will find the docker file.
 
-### To map port 
+## To map port 
 > docker run -it -p PORTINIMAGE:PORTOUTSIDE IMAGENAME
 > -it --> gives access to running container
 
-### To publish image
+## To publish image
 > docker push IMAGE
 > eg docker push username/tagname  --- here username/tagname is image tagname
 
-### To ssh to aws instance, if you have one
+## To ssh to aws instance, if you have one
 > ssh -i "key-pair" ec2Instance
 > -i flag indicates the identity file 
